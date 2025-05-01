@@ -49,11 +49,32 @@ export default function Index() {
     }
   };
 
-  const handleShorten = () => {
-    // Simulate URL shortening
-    if (url) {
-      const randomString = Math.random().toString(36).substring(2, 8);
-      setShortenedUrl(`https://short.url/${randomString}`);
+  const handleShorten = async () => {
+    if(!url) return;
+
+    console.log("URL", url)
+
+    setIsLoading(true);
+    try {
+      const LAMBDA_URL = "https://8qd4m0q1zf.execute-api.eu-central-1.amazonaws.com/prod/create";
+      const request = await fetch(LAMBDA_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          url: url
+        })
+      });
+
+      console.log(request);
+      const response = await request.json();
+      const shortURL = `${window.location.origin}/${response.short}`;
+      setShortenedUrl(shortURL);
+    } catch (error) {
+      console.log("Error shortening URL:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
