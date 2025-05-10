@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useState, useEffect } from "react";
 
+//Metadata of website ==> describes data point or data set
 export const meta: MetaFunction = () => {
   return [
     { title: "URL Shortener" },
@@ -8,7 +9,10 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+
 export default function Index() {
+
+  //state: allows components to manage and update internal data dynamically
   const [url, setUrl] = useState("");
   const [shortenedUrl, setShortenedUrl] = useState("");
   const [language, setLanguage] = useState("en");
@@ -16,6 +20,7 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [inputFocus, setInputFocus] = useState(false);
 
+  // language menu
   const translations = {
     en: {
       title: "Enter the URL address:",
@@ -49,13 +54,17 @@ export default function Index() {
     }
   };
 
+  // function that manages the shortner URL
   const handleShorten = async () => {
+    // if there is not any URL we ignore it
     if(!url) return;
 
     console.log("URL", url)
 
+    // animation loading
     setIsLoading(true);
     try {
+      // lambda endpoint to create an URL
       const LAMBDA_URL = "https://8qd4m0q1zf.execute-api.eu-central-1.amazonaws.com/prod/create";
       const request = await fetch(LAMBDA_URL, {
         method: "POST",
@@ -69,21 +78,26 @@ export default function Index() {
 
       console.log(request);
       const response = await request.json();
+
+      //shortener URL is set on the display
       const shortURL = `${window.location.origin}/${response.short}`;
       setShortenedUrl(shortURL);
     } catch (error) {
       console.log("Error shortening URL:", error);
     } finally {
+      //animation disolving
       setIsLoading(false);
     }
   };
 
+  //This manages the copy button
   const handleCopy = () => {
     navigator.clipboard.writeText(shortenedUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  //website design HTML
   return (
     <div className="flex h-screen items-center justify-center bg-blue-50">
       <div className="fixed top-6 right-6">
@@ -97,11 +111,13 @@ export default function Index() {
           <option value="it">Italiano</option>
         </select>
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          {/* SVG image */}
           <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
             <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
           </svg>
         </div>
         <div className="pointer-events-none absolute inset-y-0 left-2 flex items-center text-gray-700">
+          {/* SVG image */}
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="2" y1="12" x2="22" y2="12"></line>
@@ -206,7 +222,7 @@ export default function Index() {
           </>
         )}
       </div>
-      
+      {/* animation */}
       <style jsx global>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }

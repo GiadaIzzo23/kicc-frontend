@@ -26,8 +26,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
   }
 }
 
-// We don't need a default export since successful requests will redirect
-// This component will only be shown for errors
 
 // Handle errors
 export function ErrorBoundary() {
